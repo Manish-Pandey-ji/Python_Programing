@@ -9,7 +9,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from GitHub
-                git branch: 'main', url: 'https://github.com/Manish-Pandey-ji/Python_Programing/GIt.git'
+                
                 git branch: 'main', url: 'https://github.com/Manish-Pandey-ji/Python_Programing.git'
             }
         }
