@@ -9,8 +9,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from GitHub
-                
-                git branch: 'main', url: 'https://github.com/Manish-Pandey-ji/Python_Programing/GIt.git'
+                sh echo "Passed"
+               // git branch: 'main', url: 'https://github.com/Manish-Pandey-ji/Python_Programing/GIt.git'
             }
         }
 
@@ -18,7 +18,8 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh cd Git
+                    sh 'ls'
+                    sh 'cd Git'
                     docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
                 }
             }
