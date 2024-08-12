@@ -3,6 +3,10 @@ pipeline {
     environment {
         DOCKER_CREDENTIALS_ID = 'Docker_Id'  // Replace with your actual credentials ID
         DOCKER_IMAGE_NAME = 'manishpandey123/python'  // Replace with your actual image name
+        SONARQUBE_IMAGE_NAME = 'sonarqube:latest'  // Replace with your actual SonarQube image name
+        SONARQUBE_URL = 'http://localhost:9000'  // Replace with your SonarQube server URL
+        SONARQUBE_USERNAME = 'admin'  // Replace with your SonarQube username
+        SONARQUBE_PASSWORD = '0000'  // Replace with your SonarQube password
     }
     stages {
         stage('Checkout') {
@@ -25,12 +29,31 @@ pipeline {
                 }
             }
         }
+
         stage('Test') {
             steps {
-                // Example test step, modify as needed
-                echo 'Testing step'
+                script {
+                    // Start SonarQube server
+                    docker.image("${SONARQUBE_IMAGE_NAME}").run('-d -p 9000:9000')
+
+                    // Wait for SonarQube server to start (adjust time as needed)
+                    sleep(30)
+
+                    // Run SonarQube Scanner
+                    docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside {
+                        sh '''
+                        sonar-scanner \
+                          -Dsonar.projectKey=my_project_key \
+                          -Dsonar.sources=. \
+                          -Dsonar.host.url=${SONARQUBE_URL} \
+                          -Dsonar.login=${SONARQUBE_USERNAME} \
+                          -Dsonar.password=${SONARQUBE_PASSWORD}
+                        '''
+                    }
+                }
             }
         }
+
         stage('Deploy') {
             steps {
                 script {
