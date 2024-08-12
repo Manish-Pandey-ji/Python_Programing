@@ -1,7 +1,6 @@
 pipeline {
     agent any
     environment {
-        // Use the credentials ID you configured
         DOCKER_CREDENTIALS_ID = 'Docker_Id'  // Replace with your actual credentials ID
         DOCKER_IMAGE_NAME = 'manishpandey123/python'  // Replace with your actual image name
     }
@@ -9,8 +8,10 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Checkout code from GitHub
-                sh "echo Passed"
-               // git branch: 'main', url: 'https://github.com/Manish-Pandey-ji/Python_Programing/GIt.git'
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: '*/main']], 
+                          userRemoteConfigs: [[url: 'https://github.com/Manish-Pandey-ji/Python_Programing.git']]
+                ])
             }
         }
 
@@ -18,9 +19,9 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    sh 'ls'
-                    sh 'cd Git'
-                    docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
+                    dir('Git') {
+                        docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
+                    }
                 }
             }
         }
