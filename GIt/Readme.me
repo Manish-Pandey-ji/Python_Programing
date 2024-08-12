@@ -46,3 +46,83 @@ pipeline {
         }
     }
 }
+
+
+
+
+
+
+
+// With sonarqube testing Jenkins file is given below
+
+
+pipeline {
+    agent any
+    environment {
+        DOCKER_CREDENTIALS_ID = 'Docker_Id'  // Replace with your actual credentials ID
+        DOCKER_IMAGE_NAME = 'manishpandey123/python'  // Replace with your actual image name
+        SONARQUBE_IMAGE_NAME = 'sonarqube:latest'  // Replace with your actual SonarQube image name
+        SONARQUBE_URL = 'http://localhost:9000'  // Replace with your SonarQube server URL
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout code from GitHub
+                checkout([$class: 'GitSCM', 
+                          branches: [[name: '*/main']], 
+                          userRemoteConfigs: [[url: 'https://github.com/Manish-Pandey-ji/Python_Programing.git']]
+                ])
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    // Build the Docker image
+                    dir('Git') {
+                        docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
+                    }
+                }
+            }
+        }
+
+        stage('Test') {
+            steps {
+                script {
+                    // Start SonarQube server
+                    docker.image("${SONARQUBE_IMAGE_NAME}").run('-d -p 9000:9000')
+
+                    // Wait for SonarQube server to start (adjust time as needed)
+                    sleep(30)
+
+                    // Run SonarQube Scanner
+                    withCredentials([usernamePassword(credentialsId: 'sonarqube-credentials', usernameVariable: 'SONARQUBE_USERNAME', passwordVariable: 'SONARQUBE_PASSWORD')]) {
+                        docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside {
+                            sh '''
+                            sonar-scanner \
+                              -Dsonar.projectKey=my_project_key \
+                              -Dsonar.sources=. \
+                              -Dsonar.host.url=${SONARQUBE_URL} \
+                              -Dsonar.login=${SONARQUBE_USERNAME} \
+                              -Dsonar.password=${SONARQUBE_PASSWORD}
+                            '''
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    // Login to Docker Hub (or any other Docker registry)
+                    docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
+                        // Push the Docker image to the registry
+                        docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").push('latest')
+                    }
+                }
+            }
+        }
+    }
+}
+
