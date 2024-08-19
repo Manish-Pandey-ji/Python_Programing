@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                     // Build the Docker image
-                    dir('C:\ProgramData\Jenkins\.jenkins\workspace\Github\GIt') {
+                    dir('C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Github\\GIt') {
                         docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
                     }
                 }
