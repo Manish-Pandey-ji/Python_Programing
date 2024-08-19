@@ -40,7 +40,7 @@ pipeline {
                     sleep(60)
 
                     // Run SonarQube Scanner
-                    docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside {
+                    docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside ('-w /app'){
                         bat '''
                         sonar-scanner \
                           -Dsonar.projectKey=my_project_key \
