@@ -6,7 +6,7 @@ pipeline {
         SONARQUBE_IMAGE_NAME = 'sonarqube:latest'  // Replace with your actual SonarQube image name
         SONARQUBE_URL = 'http://localhost:9000'  // Replace with your SonarQube server URL
         SONARQUBE_USERNAME = 'admin'  // Replace with your SonarQube username
-        SONARQUBE_PASSWORD = '0000'  // Replace with your SonarQube password
+        SONARQUBE_PASSWORD = 'admin'  // Replace with your SonarQube password
     }
     stages {
         stage('Checkout') {
