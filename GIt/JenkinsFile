@@ -37,7 +37,7 @@ pipeline {
                     docker.image("${SONARQUBE_IMAGE_NAME}").run('-d -p 9000:9000')
 
                     // Wait for SonarQube server to start (adjust time as needed)
-                    sleep(30)
+                    sleep(60)
 
                     // Run SonarQube Scanner
                     docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside {
