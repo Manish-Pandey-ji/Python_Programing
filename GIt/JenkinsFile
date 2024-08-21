@@ -1,17 +1,17 @@
 pipeline {
     agent any
     environment {
-        DOCKER_CREDENTIALS_ID = 'Docker_Id'  // Replace with your actual credentials ID
-        DOCKER_IMAGE_NAME = 'manishpandey123/python'  // Replace with your actual image name
-        SONARQUBE_IMAGE_NAME = 'sonarqube:latest'  // Replace with your actual SonarQube image name
-        SONARQUBE_URL = 'http://localhost:9000'  // Replace with your SonarQube server URL
-        SONARQUBE_USERNAME = 'admin'  // Replace with your SonarQube username
-        SONARQUBE_PASSWORD = '0000'  // Replace with your SonarQube password
+        DOCKER_CREDENTIALS_ID = 'Docker_Id'  
+        DOCKER_IMAGE_NAME = 'manishpandey123/python'  
+        SONARQUBE_IMAGE_NAME = 'sonarqube:latest' 
+        SONARQUBE_URL = 'http://localhost:9000'  
+        SONARQUBE_USERNAME = 'admin'  
+        SONARQUBE_PASSWORD = '0000'  
     }
     stages {
         stage('Checkout') {
             steps {
-                // Checkout code from GitHub
+               
                 checkout([$class: 'GitSCM', 
                           branches: [[name: '*/main']], 
                           userRemoteConfigs: [[url: 'https://github.com/Manish-Pandey-ji/Python_Programing.git']]
@@ -22,7 +22,7 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Build the Docker image
+                  
                     dir('C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\Github\\GIt') {
                         docker.build("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}")
                     }
@@ -33,13 +33,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    // Start SonarQube server
-                    
-
-                    // Wait for SonarQube server to start (adjust time as needed)
-                    sleep(60)
-
-                    // Run SonarQube Scanner
+                   
                     docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").inside ('-w /app'){
                         bat '''
                         sonar-scanner \
@@ -57,9 +51,9 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Login to Docker Hub (or any other Docker registry)
+                    
                     docker.withRegistry('https://index.docker.io/v1/', "${DOCKER_CREDENTIALS_ID}") {
-                        // Push the Docker image to the registry
+                       
                         docker.image("${DOCKER_IMAGE_NAME}:${BUILD_NUMBER}").push()
                     }
                 }
