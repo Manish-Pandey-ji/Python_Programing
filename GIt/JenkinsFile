@@ -18,9 +18,7 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                        bat '''
-                        sonar-scanner.bat -D"sonar.projectKey=Python-Project" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=sqp_a8a0301fa305b0da33bcd43d423644a40dbecccf"
-                        '''
+                        bat 'sonar-scanner.bat -D"sonar.projectKey=Python-Project" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=sqp_a8a0301fa305b0da33bcd43d423644a40dbecccf" '
                 }
             }
         }
